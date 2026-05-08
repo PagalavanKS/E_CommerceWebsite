@@ -1,0 +1,3 @@
+package com.ecommerce.dto;
+import jakarta.validation.constraints.*; import java.math.BigDecimal; import java.util.List;
+public final class CartDtos { private CartDtos() {} public record AddToCartRequest(@NotNull Long productId,@NotNull @Min(1) Integer quantity) {} public record UpdateCartItemRequest(@NotNull @Min(1) Integer quantity) {} public record CartItemResponse(Long id,Long productId,String productName,BigDecimal unitPrice,Integer quantity,BigDecimal subtotal) {} public record CartResponse(List<CartItemResponse> items,BigDecimal total) {} }

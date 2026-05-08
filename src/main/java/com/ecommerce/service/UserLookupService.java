@@ -1,0 +1,3 @@
+package com.ecommerce.service;
+import com.ecommerce.exception.ApiException; import com.ecommerce.model.User; import com.ecommerce.repository.UserRepository; import org.springframework.http.HttpStatus; import org.springframework.security.core.Authentication; import org.springframework.stereotype.Service;
+@Service public class UserLookupService { private final UserRepository userRepository; public UserLookupService(UserRepository userRepository){this.userRepository=userRepository;} public User currentUser(Authentication authentication){ return userRepository.findByEmail(authentication.getName()).orElseThrow(()->new ApiException(HttpStatus.UNAUTHORIZED,"Authenticated user was not found")); } }

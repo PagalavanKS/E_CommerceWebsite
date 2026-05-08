@@ -1,0 +1,3 @@
+package com.ecommerce.dto;
+import com.ecommerce.model.*; import jakarta.validation.constraints.NotNull; import java.math.BigDecimal;
+public final class PaymentDtos { private PaymentDtos() {} public record PaymentRequest(@NotNull Long orderId,@NotNull PaymentProvider provider) {} public record PaymentResponse(Long id,Long orderId,PaymentProvider provider,PaymentStatus status,BigDecimal amount,String transactionId) {} }

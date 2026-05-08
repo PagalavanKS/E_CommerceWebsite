@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CommerceOps Store</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-block">
+      <div class="brand-mark">CS</div>
+      <div>
+        <h1>CommerceOps Store</h1>
+        <p>Catalog, checkout, payments, inventory</p>
+      </div>
+    </div>
+    <nav class="top-actions">
+      <button class="ghost" id="catalogTab">Shop</button>
+      <button class="ghost" id="adminTab">Admin</button>
+      <button class="cart-button" id="cartButton">Cart <span id="cartCount">0</span></button>
+      <button class="primary" id="authButton">Sign in</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="workspace" id="shopView">
+      <aside class="filters">
+        <div class="panel-title">Browse</div>
+        <input id="searchInput" type="search" placeholder="Search products">
+        <div class="category-list" id="categoryList"></div>
+      </aside>
+      <section class="catalog-area">
+        <div class="section-head">
+          <div>
+            <h2>Products</h2>
+            <p id="catalogSummary">Loading catalog</p>
+          </div>
+          <button class="secondary" id="refreshButton">Refresh</button>
+        </div>
+        <div class="product-grid" id="productGrid"></div>
+      </section>
+    </section>
+
+    <section class="admin-area hidden" id="adminView">
+      <div class="section-head">
+        <div>
+          <h2>Admin Console</h2>
+          <p>Manage inventory, products, and order status</p>
+        </div>
+        <button class="secondary" id="reloadAdminButton">Reload</button>
+      </div>
+      <div class="metrics" id="metrics"></div>
+      <div class="admin-layout">
+        <form class="tool-panel" id="categoryForm">
+          <h3>Create Category</h3>
+          <input name="name" placeholder="Category name" required>
+          <textarea name="description" placeholder="Description"></textarea>
+          <button class="primary" type="submit">Create</button>
+        </form>
+        <form class="tool-panel" id="productForm">
+          <h3>Create Product</h3>
+          <input name="name" placeholder="Product name" required>
+          <input name="sku" placeholder="SKU" required>
+          <textarea name="description" placeholder="Description"></textarea>
+          <input name="price" type="number" min="1" step="0.01" placeholder="Price" required>
+          <input name="stockQuantity" type="number" min="0" placeholder="Stock" required>
+          <select name="categoryId" id="productCategorySelect" required></select>
+          <button class="primary" type="submit">Add Product</button>
+        </form>
+        <div class="tool-panel wide">
+          <h3>Orders</h3>
+          <div class="order-list" id="adminOrders"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="drawer" id="cartDrawer" aria-hidden="true">
+    <div class="drawer-head">
+      <h2>Your Cart</h2>
+      <button class="icon-button" id="closeCart">x</button>
+    </div>
+    <div class="drawer-body" id="cartItems"></div>
+    <form class="checkout" id="checkoutForm">
+      <textarea id="shippingAddress" placeholder="Shipping address" required></textarea>
+      <div class="total-row"><span>Total</span><strong id="cartTotal">Rs 0.00</strong></div>
+      <button class="primary" type="submit">Checkout</button>
+      <select id="paymentProvider" aria-label="Payment method">
+        <option value="MOCK">Simple demo payment</option>
+        <option value="RAZORPAY">Razorpay demo</option>
+      </select>
+      <button class="secondary" type="button" id="payLatestButton">Pay Latest Order</button>
+    </form>
+  </aside>
+
+  <div class="modal hidden" id="authModal">
+    <form class="auth-box" id="authForm">
+      <div class="drawer-head">
+        <h2 id="authTitle">Sign in</h2>
+        <button class="icon-button" type="button" id="closeAuth">x</button>
+      </div>
+      <input id="nameField" name="name" placeholder="Name">
+      <select id="roleField" name="role" required>
+        <option value="USER">User</option>
+        <option value="ADMIN">Admin</option>
+      </select>
+      <input name="email" type="email" placeholder="Email" required>
+      <input id="passwordField" name="password" type="password" placeholder="Password" required minlength="6">
+      <p class="password-help hidden" id="passwordHelp">Use 8+ characters with uppercase, lowercase, number, and special character.</p>
+      <button class="primary" type="submit" id="authSubmit">Sign in</button>
+      <button class="link-button" type="button" id="toggleAuth">Create a new account</button>
+      <div class="demo-users">
+        <button type="button" data-email="user@shop.com" data-password="user123" data-role="USER">Use user demo</button>
+        <button type="button" data-email="admin@shop.com" data-password="admin123" data-role="ADMIN">Use admin demo</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="app.js?v=20260508-2"></script>
+</body>
+</html>

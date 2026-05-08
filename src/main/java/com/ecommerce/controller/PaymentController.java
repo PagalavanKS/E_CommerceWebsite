@@ -1,0 +1,3 @@
+package com.ecommerce.controller;
+import com.ecommerce.dto.PaymentDtos.*; import com.ecommerce.service.*; import jakarta.validation.Valid; import org.springframework.security.core.Authentication; import org.springframework.web.bind.annotation.*;
+@RestController @RequestMapping("/api/payments") public class PaymentController { private final PaymentService payments; private final UserLookupService users; public PaymentController(PaymentService payments,UserLookupService users){this.payments=payments;this.users=users;} @PostMapping public PaymentResponse pay(@Valid @RequestBody PaymentRequest r,Authentication a){return payments.pay(users.currentUser(a),r);} }
