@@ -17,7 +17,8 @@ public final class AuthDtos {
                     regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{8,}$",
                     message = "password must be at least 8 characters and include uppercase, lowercase, number, and special character"
             ) String password,
-            @NotNull Role role
+            @NotNull Role role,
+            @NotBlank String verificationCode
     ) {
     }
 
@@ -29,5 +30,11 @@ public final class AuthDtos {
     }
 
     public record AuthResponse(String token, Long userId, String name, String email, Role role) {
+    }
+
+    public record EmailVerificationRequest(@Email @NotBlank String email) {
+    }
+
+    public record EmailVerificationResponse(String email, String message, String demoCode) {
     }
 }

@@ -12,11 +12,11 @@
       <div class="brand-mark">CS</div>
       <div>
         <h1>CommerceOps Store</h1>
-        <p>Catalog, checkout, payments, inventory</p>
+        <p>Retail storefront and operations console</p>
       </div>
     </div>
     <nav class="top-actions">
-      <button class="ghost" id="catalogTab">Shop</button>
+      <button class="ghost active" id="catalogTab">Shop</button>
       <button class="ghost" id="adminTab">Admin</button>
       <button class="cart-button" id="cartButton">Cart <span id="cartCount">0</span></button>
       <button class="primary" id="authButton">Sign in</button>
@@ -24,6 +24,14 @@
   </header>
 
   <main>
+    <section class="hero-strip" id="shopHero">
+      <div>
+        <p class="eyebrow">Live catalog</p>
+        <h2>Browse products, reserve stock, and checkout in one flow.</h2>
+      </div>
+      <div class="hero-metric"><span id="heroProductCount">0</span><small>active products</small></div>
+    </section>
+
     <section class="workspace" id="shopView">
       <aside class="filters">
         <div class="panel-title">Browse</div>
@@ -43,35 +51,56 @@
     </section>
 
     <section class="admin-area hidden" id="adminView">
-      <div class="section-head">
+      <div class="section-head admin-head">
         <div>
-          <h2>Admin Console</h2>
-          <p>Manage inventory, products, and order status</p>
+          <p class="eyebrow">Admin console</p>
+          <h2>Operations Dashboard</h2>
+          <p>Manage catalog images, inventory, product removal, and customer orders.</p>
         </div>
         <button class="secondary" id="reloadAdminButton">Reload</button>
       </div>
       <div class="metrics" id="metrics"></div>
-      <div class="admin-layout">
+      <div class="admin-grid">
         <form class="tool-panel" id="categoryForm">
           <h3>Create Category</h3>
           <input name="name" placeholder="Category name" required>
           <textarea name="description" placeholder="Description"></textarea>
-          <button class="primary" type="submit">Create</button>
+          <button class="primary" type="submit">Create Category</button>
         </form>
-        <form class="tool-panel" id="productForm">
-          <h3>Create Product</h3>
-          <input name="name" placeholder="Product name" required>
-          <input name="sku" placeholder="SKU" required>
+        <form class="tool-panel product-editor" id="productForm">
+          <h3>Add Product</h3>
+          <div class="form-grid two">
+            <input name="name" placeholder="Product name" required>
+            <input name="sku" placeholder="SKU" required>
+          </div>
           <textarea name="description" placeholder="Description"></textarea>
-          <input name="price" type="number" min="1" step="0.01" placeholder="Price" required>
-          <input name="stockQuantity" type="number" min="0" placeholder="Stock" required>
+          <div class="form-grid two">
+            <input name="price" type="number" min="1" step="0.01" placeholder="Price" required>
+            <input name="stockQuantity" type="number" min="0" placeholder="Opening stock" required>
+          </div>
           <select name="categoryId" id="productCategorySelect" required></select>
+          <input name="imageUrl" id="productImageUrl" placeholder="Product photo URL" required>
+          <div class="image-preview" id="imagePreview"><img id="imagePreviewImg" class="hidden" alt="Product preview"><span>Paste a product photo URL</span></div>
           <button class="primary" type="submit">Add Product</button>
         </form>
-        <div class="tool-panel wide">
-          <h3>Orders</h3>
+        <section class="tool-panel wide">
+          <div class="section-head compact">
+            <div>
+              <h3>Products & Inventory</h3>
+              <p>Restock or remove items from the live storefront.</p>
+            </div>
+          </div>
+          <div class="admin-product-list" id="adminProducts"></div>
+        </section>
+        <section class="tool-panel wide">
+          <div class="section-head compact">
+            <div>
+              <h3>Customer Orders</h3>
+              <p>Complete order history with customer, items, delivery, and status.</p>
+            </div>
+          </div>
           <div class="order-list" id="adminOrders"></div>
-        </div>
+        </section>
       </div>
     </section>
   </main>
@@ -85,18 +114,13 @@
     <form class="checkout" id="checkoutForm">
       <textarea id="shippingAddress" placeholder="Shipping address" required></textarea>
       <div class="total-row"><span>Total</span><strong id="cartTotal">Rs 0.00</strong></div>
-      <button class="primary" type="submit">Checkout</button>
-      <select id="paymentProvider" aria-label="Payment method">
-        <option value="MOCK">Simple demo payment</option>
-        <option value="RAZORPAY">Razorpay demo</option>
-      </select>
-      <button class="secondary" type="button" id="payLatestButton">Pay Latest Order</button>
+      <button class="primary" type="submit">Proceed to Payment</button>
     </form>
   </aside>
 
   <div class="modal hidden" id="authModal">
     <form class="auth-box" id="authForm">
-      <div class="drawer-head">
+      <div class="drawer-head clean">
         <h2 id="authTitle">Sign in</h2>
         <button class="icon-button" type="button" id="closeAuth">x</button>
       </div>
@@ -106,6 +130,11 @@
         <option value="ADMIN">Admin</option>
       </select>
       <input name="email" type="email" placeholder="Email" required>
+      <div class="verification-row hidden" id="verificationTools">
+        <input id="verificationCodeField" name="verificationCode" placeholder="Email verification code">
+        <button class="secondary" type="button" id="sendVerificationButton">Send Code</button>
+      </div>
+      <p class="verification-help hidden" id="verificationHelp">Send a code to your email and enter it here before creating the account.</p>
       <input id="passwordField" name="password" type="password" placeholder="Password" required minlength="6">
       <p class="password-help hidden" id="passwordHelp">Use 8+ characters with uppercase, lowercase, number, and special character.</p>
       <button class="primary" type="submit" id="authSubmit">Sign in</button>
@@ -117,7 +146,52 @@
     </form>
   </div>
 
+  <div class="modal hidden" id="paymentModal">
+    <section class="razorpay-box">
+      <div class="razorpay-header">
+        <div>
+          <span>Razorpay</span>
+          <strong>Secure Checkout</strong>
+        </div>
+        <button class="icon-button" type="button" id="closePayment">x</button>
+      </div>
+      <div class="pay-body">
+        <div class="pay-summary">
+          <span>Order</span>
+          <strong id="paymentOrderId">#</strong>
+          <span>Amount payable</span>
+          <strong id="paymentAmount">Rs 0.00</strong>
+        </div>
+        <div class="payment-steps">
+          <span class="active" id="payStepDetails">Details</span>
+          <span id="payStepVerify">Verify</span>
+          <span id="payStepDone">Paid</span>
+        </div>
+        <div class="pay-methods">
+          <label class="pay-option"><input type="radio" name="payMethod" value="RAZORPAY" checked> UPI / Razorpay demo</label>
+          <label class="pay-option"><input type="radio" name="payMethod" value="MOCK"> Card / Cash demo</label>
+        </div>
+        <input id="paymentName" placeholder="Name on payment">
+        <div class="pay-fields" id="upiFields">
+          <input id="paymentUpi" placeholder="UPI ID, e.g. demo@upi">
+          <button class="secondary" type="button" id="sendOtpButton">Send demo OTP</button>
+        </div>
+        <div class="pay-fields hidden" id="cardFields">
+          <input id="paymentCard" placeholder="Card number, e.g. 4111 1111 1111 1111">
+          <div class="form-grid two">
+            <input id="paymentExpiry" placeholder="MM/YY">
+            <input id="paymentCvv" placeholder="CVV">
+          </div>
+        </div>
+        <input id="paymentOtp" placeholder="Demo OTP: 123456">
+        <div class="pay-status" id="paymentStatus">Enter dummy details. No real money is charged.</div>
+        <div class="receipt hidden" id="paymentReceipt"></div>
+        <button class="primary pay-now" id="completePaymentButton">Pay Securely</button>
+      </div>
+    </section>
+  </div>
+
   <div class="toast" id="toast"></div>
-  <script src="app.js?v=20260508-2"></script>
+  <script src="app.js?v=20260514-3"></script>
 </body>
 </html>

@@ -48,12 +48,10 @@ public class OrderService {
         if (items.isEmpty()) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Cart is empty");
         }
-
         Order order = new Order();
         order.setUser(user);
         order.setShippingAddress(request.shippingAddress());
         BigDecimal total = BigDecimal.ZERO;
-
         for (CartItem cartItem : items) {
             Product product = cartItem.getProduct();
             OrderItem orderItem = new OrderItem();
@@ -65,7 +63,6 @@ public class OrderService {
             order.getItems().add(orderItem);
             total = total.add(product.getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity())));
         }
-
         order.setTotalAmount(total);
         Order saved = orders.save(order);
         cartItems.deleteByUser(user);
@@ -80,9 +77,10 @@ public class OrderService {
     }
 
     public OrderResponse toResponse(Order order) {
+        User user = order.getUser();
         List<OrderItemResponse> items = order.getItems().stream()
                 .map(item -> new OrderItemResponse(item.getProduct().getId(), item.getProductName(), item.getUnitPrice(), item.getQuantity(), item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity()))))
                 .toList();
-        return new OrderResponse(order.getId(), order.getStatus(), order.getTotalAmount(), order.getShippingAddress(), order.getCreatedAt(), items);
+        return new OrderResponse(order.getId(), user.getId(), user.getName(), user.getEmail(), order.getStatus(), order.getTotalAmount(), order.getShippingAddress(), order.getCreatedAt(), items);
     }
 }

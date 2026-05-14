@@ -49,13 +49,13 @@ public class DataSeeder {
                 category.setDescription("Everyday style and essentials");
                 return categories.save(category);
             });
-            create(products, electronics, "Wireless Headphones", "AUD-1001", "Noise cancelling over-ear headphones", new BigDecimal("4999.00"), 25);
-            create(products, electronics, "Smart Watch", "WCH-2201", "Fitness tracking smart watch", new BigDecimal("8999.00"), 18);
-            create(products, fashion, "Minimal Backpack", "BAG-4100", "Water-resistant daily backpack", new BigDecimal("2499.00"), 40);
+            create(products, electronics, "Wireless Headphones", "AUD-1001", "Noise cancelling over-ear headphones", "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=900&q=80", new BigDecimal("4999.00"), 25);
+            create(products, electronics, "Smart Watch", "WCH-2201", "Fitness tracking smart watch", "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=80", new BigDecimal("8999.00"), 18);
+            create(products, fashion, "Minimal Backpack", "BAG-4100", "Water-resistant daily backpack", "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=900&q=80", new BigDecimal("2499.00"), 40);
         };
     }
 
-    private void create(ProductRepository products, Category category, String name, String sku, String description, BigDecimal price, int stock) {
+    private void create(ProductRepository products, Category category, String name, String sku, String description, String imageUrl, BigDecimal price, int stock) {
         if (products.existsBySku(sku)) {
             return;
         }
@@ -63,6 +63,7 @@ public class DataSeeder {
         product.setName(name);
         product.setSku(sku);
         product.setDescription(description);
+        product.setImageUrl(imageUrl);
         product.setPrice(price);
         product.setStockQuantity(stock);
         product.setCategory(category);

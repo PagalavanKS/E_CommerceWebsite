@@ -22,13 +22,15 @@ public class AuthService {
     private final AuthenticationManager authManager;
     private final UserDetailsService detailsService;
     private final JwtService jwt;
+    private final EmailVerificationService emailVerification;
 
-    public AuthService(UserRepository users, PasswordEncoder encoder, AuthenticationManager authManager, UserDetailsService detailsService, JwtService jwt) {
+    public AuthService(UserRepository users, PasswordEncoder encoder, AuthenticationManager authManager, UserDetailsService detailsService, JwtService jwt, EmailVerificationService emailVerification) {
         this.users = users;
         this.encoder = encoder;
         this.authManager = authManager;
         this.detailsService = detailsService;
         this.jwt = jwt;
+        this.emailVerification = emailVerification;
     }
 
     public AuthResponse register(RegisterRequest request) {
@@ -36,6 +38,7 @@ public class AuthService {
         if (users.existsByEmail(email)) {
             throw new ApiException(HttpStatus.CONFLICT, "Email is already registered");
         }
+        emailVerification.verify(email, request.verificationCode());
         User user = new User();
         user.setName(request.name());
         user.setEmail(email);
